@@ -89,14 +89,10 @@ const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
+  const fetchUserInfo = (userInfo: API.UserVO) => {
     if (userInfo) {
       flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
+        setInitialState({loginUser: userInfo});
       });
     }
   };
@@ -116,9 +112,10 @@ const Login: React.FC = () => {
           history.push(urlParams.get('redirect') || '/');
         })
         // 更新全局状态，设置登录用户的信息（保存登录态）
-        setInitialState({
-          loginUser: res.data
-        });
+        fetchUserInfo(res.data)
+        // setInitialState({
+        //   loginUser: res.data
+        // });
         return;
       }
     } catch (error) {
