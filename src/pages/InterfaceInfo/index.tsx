@@ -6,6 +6,8 @@ import {
   invokeInterfaceInfoUsingPost,
 } from '@/services/leapi-backend/interfaceInfoController';
 import { useParams } from '@@/exports';
+import {prompts} from "@umijs/utils";
+import date = prompts.prompts.date;
 
 /**
  * 主页
@@ -71,8 +73,8 @@ const Index: React.FC = () => {
             <Descriptions.Item label="请求参数">{data.requestParams}</Descriptions.Item>
             <Descriptions.Item label="请求头">{data.requestHeader}</Descriptions.Item>
             <Descriptions.Item label="响应头">{data.responseHeader}</Descriptions.Item>
-            <Descriptions.Item label="创建时间">{data.createTime}</Descriptions.Item>
-            <Descriptions.Item label="更新时间">{data.updateTime}</Descriptions.Item>
+            <Descriptions.Item valueType={date} label="创建时间">{data.createTime}</Descriptions.Item>
+            <Descriptions.Item valueType={date} label="更新时间">{data.updateTime}</Descriptions.Item>
           </Descriptions>
         ) : (
           <>接口不存在</>

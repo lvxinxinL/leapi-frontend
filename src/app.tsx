@@ -34,14 +34,14 @@ export async function getInitialState(): Promise<InitialState> {
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
     layout: 'top',
-    actionsRender: () => [<Question key="doc" />],
-    avatarProps: {
-      src: initialState?.loginUser?.userName,
-      title: <AvatarName />,
-      render: (_, avatarChildren) => {
-        return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
-      },
-    },
+    // actionsRender: () => [<Question key="doc" />],
+    // avatarProps: {
+    //   src: initialState?.loginUser?.user,
+    //   title: <AvatarName />,
+    //   render: (_, avatarChildren) => {
+    //     return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
+    //   },
+    // },
     waterMarkProps: {
       content: initialState?.loginUser?.userName,
     },

@@ -32,7 +32,7 @@ const Index: React.FC = () => {
   }, []);
 
   return (
-    <PageContainer title="LeAPI 在线接口开放平台">
+    <PageContainer title="LeAPI 接口开放平台">
       <List
         className="my-list"
         loading={loading}

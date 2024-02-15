@@ -6,15 +6,15 @@ import {
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { LoginForm, ProFormCheckbox, ProFormText } from '@ant-design/pro-components';
-import { Helmet, history, Link, useModel } from '@umijs/max';
-import {Alert, Divider, message, Space, Tabs} from 'antd';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
+import { Helmet, history, useModel } from '@umijs/max';
+import {message, Tabs } from 'antd';
 import Settings from '../../../../config/defaultSettings';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { createStyles } from 'antd-style';
-import { userLoginUsingPost } from '@/services/leapi-backend/userController';
-import { GITHUB_LINK } from '@/constants';
+import {userRegisterUsingPost} from '@/services/leapi-backend/userController';
+import { SYSTEM_LOGO } from '@/constants';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -65,21 +65,8 @@ const Lang = () => {
   const { styles } = useStyles();
   return;
 };
-const LoginMessage: React.FC<{
-  content: string;
-}> = ({ content }) => {
-  return (
-    <Alert
-      style={{
-        marginBottom: 24,
-      }}
-      message={content}
-      type="error"
-      showIcon
-    />
-  );
-};
-const Login: React.FC = () => {
+const Register: React.FC = () => {
+
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -91,36 +78,40 @@ const Login: React.FC = () => {
       });
     }
   };
-  const handleSubmit = async (values: API.UserLoginRequest) => {
+  // 表单提交
+
+  const handleSubmit = async (values: API.UserRegisterRequest) => {
+    const { userPassword, checkPassword } = values;
+    // 提交之前先校验表单项
+    if(userPassword !== checkPassword) {
+      message.error('两次输入的密码不一致');
+      return;
+    }
+
     try {
-      // 登录
-      const res = await userLoginUsingPost({
+      // 注册
+      const res = await userRegisterUsingPost({
         ...values,
       });
       // 如果登录成功（有响应值）
       if (res.data) {
-        // 获取当前 URL 的查询参数
-        const urlParams = new URL(window.location.href).searchParams;
-        // 设置一个延迟 100 毫秒的定时器
-        // 定时器出发后，导航到重定向 URL，如果没有重定向 URL，则导航到根路径
-        setTimeout(() => {
-          history.push(urlParams.get('redirect') || '/');
+        const defaultLoginSuccessMessage = '注册成功，请登录！';
+        message.success(defaultLoginSuccessMessage);
+        if(!history) return;
+        const {query} = history.location;
+        history.push({
+          pathname: '/user/login',
+          query,
         })
-        // 更新全局状态，设置登录用户的信息（保存登录态）
-        fetchUserInfo(res.data)
-        // setInitialState({
-        //   loginUser: res.data
-        // });
-        message.success("登录成功！")
         return;
       }
     } catch (error) {
-      const defaultLoginFailureMessage = '登录失败，请重试！';
+      const defaultLoginFailureMessage = '注册失败，' + error.message;
       console.log(error);
       message.error(defaultLoginFailureMessage);
     }
   };
-  const { status, type: loginType } = userLoginState;
+  // const { status, type: loginType } = userLoginState;
   return (
     <div className={styles.container}>
       <Helmet>
@@ -136,11 +127,17 @@ const Login: React.FC = () => {
         }}
       >
         <LoginForm
+          // 修改提交按钮的文字
+          submitter={{
+            searchConfig: {
+              submitText: '注册'
+            }
+          }}
           contentStyle={{
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
+          logo={<img alt="logo" src= { SYSTEM_LOGO } />}
           title="LeAPI 接口平台"
           subTitle={'追风赶月莫停留，平芜尽处是春山'}
           initialValues={{
@@ -158,14 +155,11 @@ const Login: React.FC = () => {
             items={[
               {
                 key: 'account',
-                label: '账户密码登录',
+                label: '账户密码注册',
               },
             ]}
           />
 
-          {status === 'error' && loginType === 'account' && (
-            <LoginMessage content={'错误的用户名和密码(admin/ant.design)'} />
-          )}
           {type === 'account' && (
             <>
               <ProFormText
@@ -174,7 +168,7 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
-                placeholder={'用户名: admin'}
+                placeholder={'请输入账号'}
                 rules={[
                   {
                     required: true,
@@ -192,11 +186,29 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
-                placeholder={'密码: 12345678'}
+                placeholder={'请输入密码'}
                 rules={[
                   {
                     required: true,
                     message: '密码是必填项！',
+                  },
+                  {
+                    min: 8,
+                    message: '密码长度不能小于 8 位',
+                  }
+                ]}
+              />
+              <ProFormText.Password
+                name="checkPassword"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <LockOutlined className={styles.prefixIcon} />,
+                }}
+                placeholder={'请确认密码'}
+                rules={[
+                  {
+                    required: true,
+                    message: '确认密码是必填项！',
                   },
                   {
                     min: 8,
@@ -211,20 +223,6 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <Space split={<Divider type="vertical"/>} align="start">
-              <ProFormCheckbox noStyle name="autoLogin">
-                自动登录
-              </ProFormCheckbox>
-              <Link to="/user/register">新用户注册</Link>
-              <a
-                style={{
-                  float: 'right',
-                }}
-                href={GITHUB_LINK}
-              >
-                忘记密码 ?
-              </a>
-            </Space>
           </div>
         </LoginForm>
       </div>
@@ -232,4 +230,4 @@ const Login: React.FC = () => {
     </div>
   );
 };
-export default Login;
+export default Register;
