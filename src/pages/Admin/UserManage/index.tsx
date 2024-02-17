@@ -1,4 +1,3 @@
-import {removeRule} from '@/services/ant-design-pro/api';
 import {PlusOutlined} from '@ant-design/icons';
 import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
 import {
@@ -15,12 +14,13 @@ import {Button, Drawer, message} from 'antd';
 import React, {useRef, useState} from 'react';
 import {
   addInterfaceInfoUsingPost, deleteInterfaceInfoUsingPost,
-  listInterfaceInfoByPageUsingGet, offlineInterfaceInfoUsingPost, onlineInterfaceInfoUsingPost,
+  offlineInterfaceInfoUsingPost, onlineInterfaceInfoUsingPost,
   updateInterfaceInfoUsingPost
 } from "@/services/leapi-backend/interfaceInfoController";
 import {SortOrder} from "antd/lib/table/interface";
 import CreateModal from "@/pages/Admin/InterfaceInfo/components/CreateModal";
 import UpdateModal from "@/pages/Admin/InterfaceInfo/components/UpdateModal";
+import {deleteUserUsingPost, getUserByListUsingGet, updateUserUsingPost} from "@/services/leapi-backend/userController";
 
 const TableList: React.FC = () => {
   /**
@@ -35,8 +35,8 @@ const TableList: React.FC = () => {
   const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.InterfaceInfo>();
-  const [selectedRowsState, setSelectedRows] = useState<API.InterfaceInfo[]>([]);
+  const [currentRow, setCurrentRow] = useState<API.UserVO>();
+  const [selectedRowsState, setSelectedRows] = useState<API.UserVO[]>([]);
 
   /**
    * @en-US Add node
@@ -66,13 +66,13 @@ const TableList: React.FC = () => {
    *
    * @param fields
    */
-  const handleUpdate = async (fields:  API.InterfaceInfo) => {
+  const handleUpdate = async (fields:  API.UserUpdateRequest) => {
     if (!currentRow) {
       return;
     }
     const hide = message.loading('修改中');
     try {
-      await updateInterfaceInfoUsingPost({
+      await updateUserUsingPost({
         id: currentRow.id,
         ...fields
       });
@@ -133,25 +133,33 @@ const TableList: React.FC = () => {
   };
 
   /**
-   *  Delete node
-   * @zh-CN 删除节点
+   *  ban user
+   * @zh-CN 禁用用户：将用户状态设置为 suspend，之后还可以解除封号
    *
    * @param record
    */
-  const handleRemove = async (record: API.InterfaceInfo) => {
-    const hide = message.loading('正在删除');
-    if (!record) return true;
+  const handleSuspend = async (fields:  API.UserUpdateRequest) => {
+    if (!currentRow) {
+      return;
+    }
+    const hide = message.loading('禁用中');
     try {
-      await deleteInterfaceInfoUsingPost({
-        id: record.id
+      if (currentRow.userRole === "suspend") {
+        currentRow.userRole = "user";
+      } else if (currentRow.userRole === "user") {
+        currentRow.userRole = "suspend";
+      }
+      await updateUserUsingPost({
+        id: currentRow.id,
+        userRole: currentRow.userRole,
+        ...fields
       });
       hide();
-      message.success('删除成功');
-      actionRef.current?.reload();// 自动更新数据
+      message.success('操作成功');
       return true;
     } catch (error: any) {
       hide();
-      message.error('删除失败，' + error.message);
+      message.error('操作失败，' + error.message);
       return false;
     }
   };
@@ -161,76 +169,55 @@ const TableList: React.FC = () => {
    * @zh-CN 国际化配置
    * */
 
-  const columns: ProColumns<API.InterfaceInfo>[] = [
+  const columns: ProColumns<API.UserVO>[] = [
     {
       title: 'id',
       dataIndex: 'id',
-      valueType: 'index',
+      valueType: 'indexBorder',
+      width: 48,
     },
     {
-      title: '接口名称',
-      dataIndex: 'name',
-      valueType: 'text',
-      formItemProps: {
-        rules: [{
-          required: true,
-        }]
-      }
+      title: '用户名',
+      dataIndex: 'userName',
+      copyable: true,
     },
     {
-      title: '描述',
-      dataIndex: 'description',
-      valueType: 'textarea',
-    },
-    {
-      title: '请求方法',
-      dataIndex: 'method',
-      valueType: 'textarea',
-    },
-    {
-      title: '接口地址',
-      dataIndex: 'url',
-      valueType: 'text',
-    },
-    {
-      title: '请求参数',
-      dataIndex: 'requestParams',
-      valueType: 'jsonCode',
-    },
-    {
-      title: '请求头',
-      dataIndex: 'requestHeader',
-      valueType: 'jsonCode',
-    },
-    {
-      title: '响应头',
-      dataIndex: 'responseHeader',
-      valueType: 'jsonCode',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
+      title: '账号',
+      dataIndex: 'userAccount',
+      copyable: true,
       hideInForm: true,
+    },
+    {
+      title: '头像',
+      dataIndex: 'userAvatar',
+      valueType: "image",
+      // render: (_, record) => (
+      //   <div>
+      //     <Image src={record.userAvatar} width={50}/>
+      //   </div>
+      // )
+    },
+    // {
+    //   title: '性别',
+    //   dataIndex: 'gender',
+    //   valueEnum: {
+    //     "0": { text: '男' },
+    //     "1": { text: '女' },
+    //   },
+    // },
+    {
+      title: '角色',
+      dataIndex: 'userRole',
+      valueType: 'select',
       valueEnum: {
-        0: {
-          text: '关闭',
-          status: 'Default',
-        },
-        1: {
-          text: '开启',
-          status: 'Processing',
-        },
-      }
+        "user": { text: '普通用户', status: 'Default' },
+        "admin": { text: '管理员', status: 'Success' },
+        "suspend": { text: '已禁用', status: 'Error'},
+      },
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
-      valueType: 'dateTime',
-      hideInForm: true,
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updateTime',
       valueType: 'dateTime',
       hideInForm: true,
     },
@@ -249,7 +236,7 @@ const TableList: React.FC = () => {
         >
           修改
         </Button>,
-        record.status === 0 ? <Button
+        <Button
           type="text"
           key="config"
           onClick={() => {
@@ -257,60 +244,53 @@ const TableList: React.FC = () => {
           }}
         >
           发布
-        </Button>: null,
-        record.status === 1 ?
-        <Button
-          type="text"
-          key="offline"
-          danger
-          onClick={() => {
-            handleOffline(record);
-          }}
-        >
-          下线
-        </Button> : null,
-        <Button
-          type="text"
-          key="delete"
-          danger
-          onClick={() => {
-            handleRemove(record);
-          }}
-        >
-          删除
         </Button>,
+        record.userRole === "user" ?
+        <Button
+          type="text"
+          key="config"
+          danger
+          onClick={() => {
+            setCurrentRow(record);
+            handleSuspend(record);
+          }}
+        >
+          禁用
+        </Button> : null,
+        record.userRole === "suspend" ?
+          <Button
+            type="text"
+            key="config"
+            danger
+            onClick={() => {
+              setCurrentRow(record);
+              handleSuspend(record);
+            }}
+          >
+            解除禁用
+          </Button> : null,
       ],
     },
   ];
   return (
     <PageContainer>
       <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={'查询表格'}
+        headerTitle={'用户信息列表'}
         actionRef={actionRef}
         rowKey="key"
         search={{
           labelWidth: 120,
         }}
-        toolBarRender={() => [
-          <Button
-            type="primary"
-            key="primary"
-            onClick={() => {
-              handleModalOpen(true);
-            }}
-          >
-            <PlusOutlined /> 新建
-          </Button>,
-        ]}
+
         request={async (params, sort: Record<string, SortOrder>, filter: Record<string, (string | number)[] | null>) => {
-          const res = await listInterfaceInfoByPageUsingGet({
+          const res = await getUserByListUsingGet({
             ...params
           })
           if (res?.data) {
             return {
-              data: res?.data.records || [],
+              data: res?.data || [],
               success: true,
-              total: res.data.total,
+              total: res.data,
             }
           } else {
               return {
@@ -321,43 +301,13 @@ const TableList: React.FC = () => {
             }
         }}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+        // rowSelection={{
+        //   onChange: (_, selectedRows) => {
+        //     setSelectedRows(selectedRows);
+        //   },
+        // }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择{' '}
-              <a
-                style={{
-                  fontWeight: 600,
-                }}
-              >
-                {selectedRowsState.length}
-              </a>{' '}
-              项 &nbsp;&nbsp;
-              <span>
-                服务调用次数总计 {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)} 万
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            批量删除
-          </Button>
-          <Button type="primary">批量审批</Button>
-        </FooterToolbar>
-      )}
+
       <ModalForm
         title={'新建规则'}
         width="400px"
