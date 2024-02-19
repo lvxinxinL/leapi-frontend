@@ -21,7 +21,7 @@
       { name: '用户管理页', icon: 'table', path: '/admin/user_manager', component: './Admin/UserManage' },
     ],
   },
-  { path: '/user/info', name: '个人信息', icon: 'user',  component: './User/UserInfo' },
+  { path: '/user/info', name: '个人中心', icon: 'user',  component: './User/UserInfo' },
   { path: '/user/info/edit', component: './User/UserEdit' },
   // { path: '/welcome', name: '欢迎', icon: 'smile', component: './Index' },
   // { path: '/', redirect: '/welcome' },

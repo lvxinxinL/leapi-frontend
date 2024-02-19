@@ -6,9 +6,9 @@ import {
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { LoginForm, ProFormText } from '@ant-design/pro-components';
+import {LoginForm, ProCard, ProFormText} from '@ant-design/pro-components';
 import { Helmet, history, useModel } from '@umijs/max';
-import {message, Tabs } from 'antd';
+import {Button, Descriptions, message, Tabs} from 'antd';
 import Settings from '../../../../config/defaultSettings';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
@@ -65,169 +65,45 @@ const Lang = () => {
   const { styles } = useStyles();
   return;
 };
-const Register: React.FC = () => {
+const UserInfo: React.FC = () => {
+  const [data, setData] = useState<API.LoginUserVO>();
 
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
-  const { styles } = useStyles();
-  const fetchUserInfo = (userInfo: API.UserVO) => {
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState({loginUser: userInfo});
-      });
-    }
+  const editUserInfo = () => {
+    // TODO 点击编辑按钮，跳出编辑用户信息的表单
   };
-  // 表单提交
 
-  const handleSubmit = async (values: API.UserRegisterRequest) => {
-    const { userPassword, checkPassword } = values;
-    // 提交之前先校验表单项
-    if(userPassword !== checkPassword) {
-      message.error('两次输入的密码不一致');
-      return;
-    }
-
-    try {
-      // 注册
-      const res = await userRegisterUsingPost({
-        ...values,
-      });
-      // 如果登录成功（有响应值）
-      if (res.data) {
-        const defaultLoginSuccessMessage = '注册成功，请登录！';
-        message.success(defaultLoginSuccessMessage);
-        if(!history) return;
-        const {query} = history.location;
-        history.push({
-          pathname: '/user/login',
-          query,
-        })
-        return;
-      }
-    } catch (error) {
-      const defaultLoginFailureMessage = '注册失败，' + error.message;
-      console.log(error);
-      message.error(defaultLoginFailureMessage);
-    }
-  };
-  // const { status, type: loginType } = userLoginState;
   return (
-    <div className={styles.container}>
-      <Helmet>
-        <title>
-          {'登录'}- {Settings.title}
-        </title>
-      </Helmet>
-      <Lang />
-      <div
-        style={{
-          flex: '1',
-          padding: '32px 0',
-        }}
+    <>
+      <ProCard
+        // title="个人中心"
+        bordered
+        headerBordered
+        direction="column"
+        gutter={[0, 16]}
+        style={{ marginBlockStart: 8 }}
       >
-        <LoginForm
-          // 修改提交按钮的文字
-          submitter={{
-            searchConfig: {
-              submitText: '注册'
-            }
-          }}
-          contentStyle={{
-            minWidth: 280,
-            maxWidth: '75vw',
-          }}
-          logo={<img alt="logo" src= { SYSTEM_LOGO } />}
-          title="LeAPI 接口平台"
-          subTitle={'追风赶月莫停留，平芜尽处是春山'}
-          initialValues={{
-            autoLogin: true,
-          }}
-          onFinish={async (values) => {
-            await handleSubmit(values as API.UserLoginRequest);
-          }}
-        >
-
-          <Tabs
-            activeKey={type}
-            onChange={setType}
-            centered
-            items={[
-              {
-                key: 'account',
-                label: '账户密码注册',
-              },
-            ]}
-          />
-
-          {type === 'account' && (
-            <>
-              <ProFormText
-                name="userAccount"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <UserOutlined />,
-                }}
-                placeholder={'请输入账号'}
-                rules={[
-                  {
-                    required: true,
-                    message: '用户名是必填项！',
-                  },
-                  {
-                    min: 4,
-                    message: '账号长度不小于 4 位',
-                  }
-                ]}
-              />
-              <ProFormText.Password
-                name="userPassword"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined />,
-                }}
-                placeholder={'请输入密码'}
-                rules={[
-                  {
-                    required: true,
-                    message: '密码是必填项！',
-                  },
-                  {
-                    min: 8,
-                    message: '密码长度不能小于 8 位',
-                  }
-                ]}
-              />
-              <ProFormText.Password
-                name="checkPassword"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined className={styles.prefixIcon} />,
-                }}
-                placeholder={'请确认密码'}
-                rules={[
-                  {
-                    required: true,
-                    message: '确认密码是必填项！',
-                  },
-                  {
-                    min: 8,
-                    message: '密码长度不能小于 8 位',
-                  }
-                ]}
-              />
-            </>
+        <ProCard title="个人信息详情" type="inner" bordered extra={<Button htmlType="button" onClick={editUserInfo} key="edit">
+          一键填写
+        </Button>}>
+          {data ? (
+            <Descriptions column={1} >
+              <Descriptions.Item label="头像">{data.userAvatar}</Descriptions.Item>
+              <Descriptions.Item label="昵称">{data.userName}</Descriptions.Item>
+              <Descriptions.Item label="角色">{data.userRole}</Descriptions.Item>
+              <Descriptions.Item label="注册时间">{data.createTime}</Descriptions.Item>
+            </Descriptions>
+          ) : (
+            <>用户不存在</>
           )}
-          <div
-            style={{
-              marginBottom: 24,
-            }}
-          >
-          </div>
-        </LoginForm>
-      </div>
-      <Footer />
-    </div>
+        </ProCard>
+        <ProCard title="用户凭证" type="inner" bordered>
+          个人信息详情
+        </ProCard>
+        <ProCard title="开发者 SDK（快速使用 API 接口）" type="inner" bordered>
+          Maven 仓库的地址
+        </ProCard>
+      </ProCard>
+    </>
   );
 };
-export default Register;
+export default UserInfo;

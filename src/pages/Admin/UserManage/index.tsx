@@ -191,6 +191,7 @@ const TableList: React.FC = () => {
       title: '头像',
       dataIndex: 'userAvatar',
       valueType: "image",
+      hideInSearch: true,
       // render: (_, record) => (
       //   <div>
       //     <Image src={record.userAvatar} width={50}/>
