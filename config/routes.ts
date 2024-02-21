@@ -22,6 +22,7 @@
     ],
   },
   { path: '/user/info', name: '个人中心', icon: 'user',  component: './User/UserInfo' },
+  // { path: '/user/info/test', name: '个人中心测试', icon: 'user',  component: './User/UserInfo' },
   { path: '/user/info/edit', component: './User/UserEdit' },
   // { path: '/welcome', name: '欢迎', icon: 'smile', component: './Index' },
   // { path: '/', redirect: '/welcome' },

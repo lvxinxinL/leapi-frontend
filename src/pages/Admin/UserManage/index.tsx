@@ -1,7 +1,5 @@
-import {PlusOutlined} from '@ant-design/icons';
 import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
 import {
-  FooterToolbar,
   ModalForm,
   PageContainer,
   ProDescriptions,
@@ -13,14 +11,12 @@ import '@umijs/max';
 import {Button, Drawer, message} from 'antd';
 import React, {useRef, useState} from 'react';
 import {
-  addInterfaceInfoUsingPost, deleteInterfaceInfoUsingPost,
-  offlineInterfaceInfoUsingPost, onlineInterfaceInfoUsingPost,
-  updateInterfaceInfoUsingPost
+  addInterfaceInfoUsingPost, onlineInterfaceInfoUsingPost,
 } from "@/services/leapi-backend/interfaceInfoController";
 import {SortOrder} from "antd/lib/table/interface";
 import CreateModal from "@/pages/Admin/InterfaceInfo/components/CreateModal";
 import UpdateModal from "@/pages/Admin/InterfaceInfo/components/UpdateModal";
-import {deleteUserUsingPost, getUserByListUsingGet, updateUserUsingPost} from "@/services/leapi-backend/userController";
+import {getUserByListUsingGet, updateUserUsingPost} from "@/services/leapi-backend/userController";
 
 const TableList: React.FC = () => {
   /**
@@ -36,7 +32,6 @@ const TableList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.UserVO>();
-  const [selectedRowsState, setSelectedRows] = useState<API.UserVO[]>([]);
 
   /**
    * @en-US Add node
@@ -61,8 +56,7 @@ const TableList: React.FC = () => {
   };
 
   /**
-   * @en-US Update node
-   * @zh-CN 更新节点
+   * 更新节点
    *
    * @param fields
    */
@@ -110,29 +104,6 @@ const TableList: React.FC = () => {
   };
 
   /**
-   * 下线接口
-   *
-   * @param record
-   */
-  const handleOffline = async (record: API.IdRequest) => {
-    const hide = message.loading('发布中');
-    if (!record) return true;
-    try {
-      await offlineInterfaceInfoUsingPost({
-        id: record.id
-      });
-      hide();
-      message.success('下线成功');
-      actionRef.current?.reload();// 自动更新数据
-      return true;
-    } catch (error: any) {
-      hide();
-      message.error('下线失败，' + error.message);
-      return false;
-    }
-  };
-
-  /**
    *  ban user
    * @zh-CN 禁用用户：将用户状态设置为 suspend，之后还可以解除封号
    *
@@ -163,11 +134,6 @@ const TableList: React.FC = () => {
       return false;
     }
   };
-
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
 
   const columns: ProColumns<API.UserVO>[] = [
     {

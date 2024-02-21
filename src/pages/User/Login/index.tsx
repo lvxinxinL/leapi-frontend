@@ -115,7 +115,7 @@ const Login: React.FC = () => {
         return;
       }
     } catch (error) {
-      const defaultLoginFailureMessage = '登录失败，请重试！';
+      const defaultLoginFailureMessage = error.message + '，请重试！' ;
       console.log(error);
       message.error(defaultLoginFailureMessage);
     }
@@ -164,7 +164,7 @@ const Login: React.FC = () => {
           />
 
           {status === 'error' && loginType === 'account' && (
-            <LoginMessage content={'错误的用户名和密码(admin/ant.design)'} />
+            <LoginMessage content={'错误的用户名和密码(admin/leapi)'} />
           )}
           {type === 'account' && (
             <>
