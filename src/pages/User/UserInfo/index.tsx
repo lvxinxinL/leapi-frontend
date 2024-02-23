@@ -1,16 +1,47 @@
-import { ProCard, ProDescriptions } from '@ant-design/pro-components';
+import {ActionType, ProCard, ProDescriptions} from '@ant-design/pro-components';
 import {
   getLoginUserUsingGet,
+  updateMyUserCertificateUsingPost,
   updateMyUserUsingPost,
 } from '@/services/leapi-backend/userController';
-import { values } from 'lodash';
-import { Button } from 'antd';
+import {values} from 'lodash';
+import {Button, message} from 'antd';
+import {useRef, useState} from 'react';
 
 /**
- * 用户测试主页
+ * 个人中心
  * @constructor
  */
-const UserInfoTest: React.FC = () => {
+const UserInfo: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [currentRow, setCurrentRow] = useState<API.UserVO>();
+  const [reloadFlag, setReloadFlag] = useState(false);
+
+
+  /**
+   * @en-US Update certificate
+   * @zh-CN 更新凭证
+   * @param currentRow
+   */
+  const handleUpdateCertificate = async (currentRow: API.IdRequest) => {
+    const hide = message.loading('正在更新');
+    if (!currentRow) return true;
+    try {
+      await updateMyUserCertificateUsingPost({
+        id: currentRow.id,
+      });
+      hide();
+      message.success('更新成功');
+      // 点击按钮时更新状态变量的值
+      setReloadFlag(prevFlag => !prevFlag);
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error('更新失败，' + error.message);
+      return false;
+    }
+  };
+
   return (
     <ProCard
       bordered
@@ -42,6 +73,7 @@ const UserInfoTest: React.FC = () => {
           }}
           emptyText={'空'}
           editable={{
+            // 编辑框修改后点击 ✔ 保存用户昵称
             onSave: async (keypath, newInfo, oriInfo) => {
               console.log(keypath, newInfo, oriInfo);
               const res = await updateMyUserUsingPost(newInfo);
@@ -101,11 +133,58 @@ const UserInfoTest: React.FC = () => {
           ]}
         ></ProDescriptions>
       </ProCard>
-      {/*TODO 点击更新凭证按钮，更新用户凭证*/}
-      <ProCard title="用户凭证" type="inner" bordered extra={<Button>更新凭证</Button>}>
-        AccessKey:
-        <div></div>
-        SecretKey:
+      {/*TODO 点击更新凭证按钮，更新用户凭证 (values) => {handleUpdateCertificate(values)}*/}
+      <ProCard
+        title="用户凭证"
+        type="inner"
+        bordered
+        // 使用reloadFlag作为key来触发组件重新加载
+        key={reloadFlag.toString()}
+        extra={
+          <Button
+            onClick={() => {
+              handleUpdateCertificate(currentRow)
+            }}
+          >
+            更新凭证
+          </Button>
+        }
+      >
+        <ProDescriptions
+          column={1}
+          request={async () => {
+            const res = await getLoginUserUsingGet({
+              ...values(),
+            });
+            setCurrentRow(res.data);
+            if (res?.data) {
+              return {
+                data: res?.data || '',
+                success: true,
+                total: res.data,
+              };
+            } else {
+              return {
+                data: '',
+                success: false,
+                total: 0,
+              };
+            }
+          }}
+          emptyText={'空'}
+          columns={[
+            {
+              title: 'AccessKey',
+              dataIndex: 'accessKey',
+              copyable: true,
+            },
+            {
+              title: 'SecretKey',
+              dataIndex: 'secretKey',
+              copyable: true,
+            },
+          ]}
+        ></ProDescriptions>
       </ProCard>
       <ProCard
         title="开发者 SDK（快速调用接口）"
@@ -121,4 +200,4 @@ const UserInfoTest: React.FC = () => {
   );
 };
 
-export default UserInfoTest;
+export default UserInfo;
