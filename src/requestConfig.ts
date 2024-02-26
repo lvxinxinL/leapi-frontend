@@ -15,8 +15,8 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const requestConfig: RequestConfig = {
-  baseURL: 'http://localhost:8101',
-  withCredentials: true,
+  baseURL: 'http://localhost:8101',// 后端服务器
+  withCredentials: true,// 发送请求时携带 Cookie
   // 请求拦截器
   requestInterceptors: [
     (config: RequestOptions) => {

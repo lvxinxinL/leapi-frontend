@@ -83,6 +83,7 @@ const Index: React.FC = () => {
         <Form name="invoke" layout="vertical" onFinish={onFinish}>
           <Form.Item label="请求参数" name="userRequestParams">
             <Input.TextArea />
+          {/* TODO 给用户友好提示，但是不能写死，要根据不同的接口调整不同的请求参数 {"username": "leapi"} */}
           </Form.Item>
           <Form.Item wrapperCol={{ span: 16 }}>
             <Button type="primary" htmlType="submit">
