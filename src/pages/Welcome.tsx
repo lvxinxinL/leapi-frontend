@@ -76,9 +76,7 @@ const InfoCard: React.FC<{
       >
         {desc}
       </div>
-      <a href={href} target="_blank" rel="noreferrer">
-        了解更多 {'>'}
-      </a>
+
     </div>
   );
 };
@@ -114,7 +112,7 @@ const Welcome: React.FC = () => {
               color: token.colorTextHeading,
             }}
           >
-            欢迎使用 Ant Design Pro
+            欢迎使用 LeAPI 接口开放平台
           </div>
           <p
             style={{
@@ -126,8 +124,17 @@ const Welcome: React.FC = () => {
               width: '65%',
             }}
           >
-            Ant Design Pro 是一个整合了 umi，Ant Design 和 ProComponents
-            的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
+            LeAPI 是一个基于 SpringBoot，Ant Design 和 ProComponents 开发的平台。
+            致力于为『用户』和『开发者』提供简易快捷的开发接口。
+          </p>
+          <p>
+            作为『开发者』，可以通过导入 leapi-client-sdk 快速在项目中集成调用接口的客户端，通过配置客户端的用户凭证快速调用接口，减轻开发成本，简化开发。
+          </p>
+          <p>
+            作为『用户』，可以查看接口列表，选择需要的接口查看接口文档，并输入参数进而在线调用接口，快速查看接口的返回值，判断接口的实现功能。
+          </p>
+          <p>
+            作为『管理员』，可以管理接口和用户，管理接口时可以修改接口信息、上线接口、添加接口、发布接口和下线接口。管理用户时可以修改用户信息、禁用用户和接触用户的禁用等。
           </p>
           <div
             style={{
@@ -138,21 +145,18 @@ const Welcome: React.FC = () => {
           >
             <InfoCard
               index={1}
-              href="https://umijs.org/docs/introduce/introduce"
-              title="了解 umi"
-              desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
+              title="多样化的接口选择"
+              desc="LeAPI 提供了丰富多样的接口用您选择，涵盖了开发中常用的功能，满足您的不同需求。"
             />
             <InfoCard
               index={2}
-              title="了解 ant design"
-              href="https://ant.design"
-              desc="antd 是基于 Ant Design 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
+              title="在线调试功能"
+              desc="您可以在平台上进行接口在线调试，快速验证接口的功能和效果，节省了开发调试的时间和工作量。"
             />
             <InfoCard
               index={3}
-              title="了解 Pro Components"
-              href="https://procomponents.ant.design"
-              desc="ProComponents 是一个基于 Ant Design 做了更高抽象的模板组件，以 一个组件就是一个页面为开发理念，为中后台开发带来更好的体验。"
+              title="开发者 SDK 支持"
+              desc="为了方便开发者集成接口到自己的代码中，平台提供了客户端SDK，使调用接口变得更加简单和便捷。"
             />
           </div>
         </div>

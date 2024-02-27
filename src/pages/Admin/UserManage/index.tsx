@@ -1,29 +1,16 @@
-import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
-import {
-  ModalForm,
-  PageContainer,
-  ProDescriptions,
-  ProFormText,
-  ProFormTextArea,
-  ProTable,
-} from '@ant-design/pro-components';
+import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
+import { PageContainer, ProDescriptions, ProTable } from '@ant-design/pro-components';
 import '@umijs/max';
-import {Button, Drawer, message} from 'antd';
-import React, {useRef, useState} from 'react';
+import { Button, Drawer, message } from 'antd';
+import React, { useRef, useState } from 'react';
+import { SortOrder } from 'antd/lib/table/interface';
 import {
-  addInterfaceInfoUsingPost, onlineInterfaceInfoUsingPost,
-} from "@/services/leapi-backend/interfaceInfoController";
-import {SortOrder} from "antd/lib/table/interface";
-import CreateModal from "@/pages/Admin/InterfaceInfo/components/CreateModal";
-import UpdateModal from "@/pages/Admin/InterfaceInfo/components/UpdateModal";
-import {getUserByListUsingGet, updateUserUsingPost} from "@/services/leapi-backend/userController";
+  getUserByListUsingGet,
+  updateUserUsingPost,
+} from '@/services/leapi-backend/userController';
+import UpdateModal from "@/pages/Admin/UserManage/components/UpdateModal";
 
 const TableList: React.FC = () => {
-  /**
-   * @en-US Pop-up window of new window
-   * @zh-CN 新建窗口的弹窗
-   *  */
-  const [createModalOpen, handleModalOpen] = useState<boolean>(false);
   /**
    * @en-US The pop-up window of the distribution update window
    * @zh-CN 分布更新窗口的弹窗
@@ -32,35 +19,14 @@ const TableList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.UserVO>();
-
-  /**
-   * @en-US Add node
-   * @zh-CN 添加节点
-   * @param fields
-   */
-  const handleAdd = async (fields: API.InterfaceInfo) => {
-    const hide = message.loading('正在添加');
-    try {
-      await addInterfaceInfoUsingPost({
-        ...fields,
-      });
-      hide();
-      message.success('创建成功');
-      handleModalOpen(false);
-      return true;
-    } catch (error: any) {
-      hide();
-      message.error('创建失败，' + error.message);
-      return false;
-    }
-  };
+  const [reloadFlag, setReloadFlag] = useState(false);
 
   /**
    * 更新节点
    *
    * @param fields
    */
-  const handleUpdate = async (fields:  API.UserUpdateRequest) => {
+  const handleUpdate = async (fields: API.UserUpdateRequest) => {
     if (!currentRow) {
       return;
     }
@@ -68,7 +34,7 @@ const TableList: React.FC = () => {
     try {
       await updateUserUsingPost({
         id: currentRow.id,
-        ...fields
+        ...fields,
       });
       hide();
       message.success('操作成功');
@@ -81,52 +47,31 @@ const TableList: React.FC = () => {
   };
 
   /**
-   * 发布接口
-   *
-   * @param record
-   */
-  const handleOnline = async (record: API.IdRequest) => {
-    const hide = message.loading('发布中');
-    if (!record) return true;
-    try {
-      await onlineInterfaceInfoUsingPost({
-        id: record.id
-      });
-      hide();
-      message.success('发布成功');
-      actionRef.current?.reload();// 自动更新数据
-      return true;
-    } catch (error: any) {
-      hide();
-      message.error('发布失败，' + error.message);
-      return false;
-    }
-  };
-
-  /**
    *  ban user
    * @zh-CN 禁用用户：将用户状态设置为 suspend，之后还可以解除封号
    *
    * @param record
    */
-  const handleSuspend = async (fields:  API.UserUpdateRequest) => {
+  const handleSuspend = async (fields: API.UserUpdateRequest) => {
     if (!currentRow) {
       return;
     }
     const hide = message.loading('禁用中');
     try {
-      if (currentRow.userRole === "suspend") {
-        currentRow.userRole = "user";
-      } else if (currentRow.userRole === "user") {
-        currentRow.userRole = "suspend";
+      if (currentRow.userRole === 'suspend') {
+        currentRow.userRole = 'user';
+      } else if (currentRow.userRole === 'user') {
+        currentRow.userRole = 'suspend';
       }
       await updateUserUsingPost({
         id: currentRow.id,
         userRole: currentRow.userRole,
-        ...fields
+        ...fields,
       });
       hide();
       message.success('操作成功');
+      // 点击按钮时更新状态变量的值
+      setReloadFlag((prevFlag) => !prevFlag);
       return true;
     } catch (error: any) {
       hide();
@@ -156,8 +101,9 @@ const TableList: React.FC = () => {
     {
       title: '头像',
       dataIndex: 'userAvatar',
-      valueType: "image",
+      valueType: 'image',
       hideInSearch: true,
+      hideInForm: true,
       // render: (_, record) => (
       //   <div>
       //     <Image src={record.userAvatar} width={50}/>
@@ -177,9 +123,9 @@ const TableList: React.FC = () => {
       dataIndex: 'userRole',
       valueType: 'select',
       valueEnum: {
-        "user": { text: '普通用户', status: 'Default' },
-        "admin": { text: '管理员', status: 'Success' },
-        "suspend": { text: '已禁用', status: 'Error'},
+        user: { text: '普通用户', status: 'Default' },
+        admin: { text: '管理员', status: 'Success' },
+        suspend: { text: '已禁用', status: 'Error' },
       },
     },
     {
@@ -187,6 +133,7 @@ const TableList: React.FC = () => {
       dataIndex: 'createTime',
       valueType: 'dateTime',
       hideInForm: true,
+      hideInSearch: true,
     },
     {
       title: '操作',
@@ -196,6 +143,7 @@ const TableList: React.FC = () => {
         <Button
           type="text"
           key="config"
+          textHoverBg="#fff"
           onClick={() => {
             handleUpdateModalOpen(true);
             setCurrentRow(record);
@@ -203,28 +151,20 @@ const TableList: React.FC = () => {
         >
           修改
         </Button>,
-        <Button
-          type="text"
-          key="config"
-          onClick={() => {
-            handleOnline(record);
-          }}
-        >
-          发布
-        </Button>,
-        record.userRole === "user" ?
-        <Button
-          type="text"
-          key="config"
-          danger
-          onClick={() => {
-            setCurrentRow(record);
-            handleSuspend(record);
-          }}
-        >
-          禁用
-        </Button> : null,
-        record.userRole === "suspend" ?
+        record.userRole === 'user' ? (
+          <Button
+            type="text"
+            key="config"
+            danger
+            onClick={() => {
+              setCurrentRow(record);
+              handleSuspend(record);
+            }}
+          >
+            禁用
+          </Button>
+        ) : null,
+        record.userRole === 'suspend' ? (
           <Button
             type="text"
             key="config"
@@ -235,7 +175,8 @@ const TableList: React.FC = () => {
             }}
           >
             解除禁用
-          </Button> : null,
+          </Button>
+        ) : null,
       ],
     },
   ];
@@ -248,24 +189,29 @@ const TableList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
-
-        request={async (params, sort: Record<string, SortOrder>, filter: Record<string, (string | number)[] | null>) => {
+        // 使用reloadFlag作为key来触发组件重新加载
+        key={reloadFlag.toString()}
+        request={async (
+          params,
+          sort: Record<string, SortOrder>,
+          filter: Record<string, (string | number)[] | null>,
+        ) => {
           const res = await getUserByListUsingGet({
-            ...params
-          })
+            ...params,
+          });
           if (res?.data) {
             return {
               data: res?.data || [],
               success: true,
               total: res.data,
-            }
+            };
           } else {
-              return {
-                data: [],
-                success: false,
-                total: 0,
-              }
-            }
+            return {
+              data: [],
+              success: false,
+              total: 0,
+            };
+          }
         }}
         columns={columns}
         // rowSelection={{
@@ -274,34 +220,6 @@ const TableList: React.FC = () => {
         //   },
         // }}
       />
-
-      <ModalForm
-        title={'新建规则'}
-        width="400px"
-        open={createModalOpen}
-        onOpenChange={handleModalOpen}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
-          if (success) {
-            handleModalOpen(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-      >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: '规则名称为必填项',
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
-      </ModalForm>
       <UpdateModal
         columns={columns}
         onSubmit={async (value) => {
@@ -323,7 +241,6 @@ const TableList: React.FC = () => {
         visible={updateModalOpen}
         values={currentRow || {}}
       />
-
       <Drawer
         width={600}
         open={showDetail}
@@ -347,7 +264,7 @@ const TableList: React.FC = () => {
           />
         )}
       </Drawer>
-      <CreateModal columns={columns} onCancel={() => {handleModalOpen(false)}} onSubmit={(values) => {handleAdd(values)}} visible={createModalOpen}/>
+
     </PageContainer>
   );
 };

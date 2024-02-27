@@ -1,19 +1,19 @@
-import {ActionType, ProCard, ProDescriptions} from '@ant-design/pro-components';
+import {ProCard, ProDescriptions, ProFormUploadDragger} from '@ant-design/pro-components';
 import {
   getLoginUserUsingGet,
   updateMyUserCertificateUsingPost,
   updateMyUserUsingPost,
 } from '@/services/leapi-backend/userController';
 import {values} from 'lodash';
-import {Button, message} from 'antd';
-import {useRef, useState} from 'react';
+import {Button, message, DownloadOutlined} from 'antd';
+import {useState} from 'react';
+import {PoweroffOutlined} from "@ant-design/icons";
 
 /**
  * 个人中心
  * @constructor
  */
 const UserInfo: React.FC = () => {
-  const [loading, setLoading] = useState(false);
   const [currentRow, setCurrentRow] = useState<API.UserVO>();
   const [reloadFlag, setReloadFlag] = useState(false);
 
@@ -133,7 +133,6 @@ const UserInfo: React.FC = () => {
           ]}
         ></ProDescriptions>
       </ProCard>
-      {/*TODO 点击更新凭证按钮，更新用户凭证 (values) => {handleUpdateCertificate(values)}*/}
       <ProCard
         title="用户凭证"
         type="inner"
@@ -143,7 +142,7 @@ const UserInfo: React.FC = () => {
         extra={
           <Button
             onClick={() => {
-              handleUpdateCertificate(currentRow)
+              handleUpdateCertificate(currentRow);
             }}
           >
             更新凭证
@@ -186,15 +185,10 @@ const UserInfo: React.FC = () => {
           ]}
         ></ProDescriptions>
       </ProCard>
-      <ProCard
-        title="开发者 SDK（快速调用接口）"
-        type="inner"
-        bordered
-        extra={<Button>一键复制</Button>}
-      >
-        Maven 仓库地址
-        <div></div>
-        dependency
+      <ProCard title="开发者 SDK（快速调用接口）" type="inner" bordered>
+        <Button type="primary" href='https://github.com/lvxinxinL/leapi-client-sdk' target="_blank">
+          导入 Java SDK
+        </Button>
       </ProCard>
     </ProCard>
   );
