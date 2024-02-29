@@ -1,6 +1,6 @@
-import {PageContainer, ProFormTextArea} from '@ant-design/pro-components';
+import { PageContainer } from '@ant-design/pro-components';
 import React, { useEffect, useState } from 'react';
-import {Button, Card, Descriptions, Form, message, Input, Divider, Switch} from 'antd';
+import {Button, Card, Descriptions, Form, message, Input, Divider, Switch, Avatar, Image} from 'antd';
 import {
   getInterfaceInfoByIdUsingGet,
   invokeInterfaceInfoUsingPost,
@@ -83,7 +83,7 @@ const Index: React.FC = () => {
         <Form name="invoke" layout="vertical" onFinish={onFinish}>
           <Form.Item label="请求参数" name="userRequestParams">
             <Input.TextArea />
-          {/* TODO 给用户友好提示，但是不能写死，要根据不同的接口调整不同的请求参数 {"username": "leapi"} */}
+            {/* TODO 给用户友好提示，但是不能写死，要根据不同的接口调整不同的请求参数 {"username": "leapi"} */}
           </Form.Item>
           <Form.Item wrapperCol={{ span: 16 }}>
             <Button type="primary" htmlType="submit">
@@ -93,9 +93,14 @@ const Index: React.FC = () => {
         </Form>
       </Card>
       <Divider />
+
       <Card title="返回结果" loading={invokeLoading}>
         {invokeRes}
       </Card>
+
+        {/*  TODO 如果是图片（imgUrl），渲染展示图片的组件*/}
+        {/*  TODO 展示 JSON 数据格式的组件*/}
+
     </PageContainer>
   );
 };

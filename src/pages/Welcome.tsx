@@ -2,6 +2,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
 import { Card, theme } from 'antd';
 import React from 'react';
+import {LEAPI_CLIENT_SDK} from "@/constants";
 
 /**
  * 每个单独的卡片，为了复用样式抽成了组件
@@ -112,7 +113,7 @@ const Welcome: React.FC = () => {
               color: token.colorTextHeading,
             }}
           >
-            欢迎使用 LeAPI 接口开放平台
+            欢迎使用 LeAPI 接口开放平台 🎉
           </div>
           <p
             style={{
@@ -124,17 +125,16 @@ const Welcome: React.FC = () => {
               width: '65%',
             }}
           >
-            LeAPI 是一个基于 SpringBoot，Ant Design 和 ProComponents 开发的平台。
-            致力于为『用户』和『开发者』提供简易快捷的开发接口。
+            LeAPI 接口开放平台是一个为用户和开发者提供丰富 API 接口调用服务的平台 🛠
           </p>
           <p>
-            作为『开发者』，可以通过导入 leapi-client-sdk 快速在项目中集成调用接口的客户端，通过配置客户端的用户凭证快速调用接口，减轻开发成本，简化开发。
+            💻 作为『开发者』，可以在线选择所需接口并通过导入 <a href={ LEAPI_CLIENT_SDK} target='_blank'> leapi-client-sdk </a> 快速在项目中集成调用接口的客户端，通过配置客户端的用户凭证快速调用接口，减轻开发成本，简化开发。
           </p>
           <p>
-            作为『用户』，可以查看接口列表，选择需要的接口查看接口文档，并输入参数进而在线调用接口，快速查看接口的返回值，判断接口的实现功能。
+            😀 作为『用户』，可以查看接口列表，选择感兴趣的接口查看接口文档，在线调用接口，快速查看接口的返回值，判断接口的实现功能。
           </p>
           <p>
-            作为『管理员』，可以管理接口和用户，管理接口时可以修改接口信息、上线接口、添加接口、发布接口和下线接口。管理用户时可以修改用户信息、禁用用户和接触用户的禁用等。
+            🤝 作为『管理员』，可以管理接口和用户，管理接口时可以修改接口信息、上线、添加、发布和下线接口。管理用户时可以修改用户信息、禁用用户和解除用户的禁用等。
           </p>
           <div
             style={{

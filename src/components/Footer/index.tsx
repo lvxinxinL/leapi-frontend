@@ -2,9 +2,10 @@ import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
 import {BLOG_LINK, GITHUB_LINK} from "@/constants";
+import {LinkOutlined} from "@ant-design/icons/lib/icons";
 
 const Footer: React.FC = () => {
-  const defaultMessage = '乐小鑫的 API 接口开放平台';
+  const defaultMessage = 'LeAPI 接口开放平台 v1.0.0';
   const currentYear = new Date().getFullYear();
   return (
     <DefaultFooter
@@ -15,7 +16,7 @@ const Footer: React.FC = () => {
       links={[
         {
           key: 'blog',
-          title: '开发者 CSDN 地址',
+          title: <> 乐小鑫 CSDN <LinkOutlined /></>,
           href: BLOG_LINK,
           blankTarget: true,
         },

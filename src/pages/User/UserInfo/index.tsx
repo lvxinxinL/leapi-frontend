@@ -8,6 +8,7 @@ import {values} from 'lodash';
 import {Button, message, DownloadOutlined} from 'antd';
 import {useState} from 'react';
 import {PoweroffOutlined} from "@ant-design/icons";
+import {LEAPI_CLIENT_SDK} from "@/constants";
 
 /**
  * 个人中心
@@ -186,7 +187,7 @@ const UserInfo: React.FC = () => {
         ></ProDescriptions>
       </ProCard>
       <ProCard title="开发者 SDK（快速调用接口）" type="inner" bordered>
-        <Button type="primary" href='https://github.com/lvxinxinL/leapi-client-sdk' target="_blank">
+        <Button type="primary" href={LEAPI_CLIENT_SDK} target='_blank'>
           导入 Java SDK
         </Button>
       </ProCard>

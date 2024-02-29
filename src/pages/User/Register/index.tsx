@@ -15,6 +15,7 @@ import { flushSync } from 'react-dom';
 import { createStyles } from 'antd-style';
 import {userRegisterUsingPost} from '@/services/leapi-backend/userController';
 import { SYSTEM_LOGO } from '@/constants';
+import {Link} from "@@/exports";
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -67,17 +68,9 @@ const Lang = () => {
 };
 const Register: React.FC = () => {
 
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
-  const fetchUserInfo = (userInfo: API.UserVO) => {
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState({loginUser: userInfo});
-      });
-    }
-  };
   // 表单提交
 
   const handleSubmit = async (values: API.UserRegisterRequest) => {
@@ -138,7 +131,7 @@ const Register: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={<img alt="logo" src= { SYSTEM_LOGO } />}
-          title="LeAPI 接口平台"
+          title="LeAPI 接口开放平台"
           subTitle={'追风赶月莫停留，平芜尽处是春山'}
           initialValues={{
             autoLogin: true,
@@ -218,9 +211,10 @@ const Register: React.FC = () => {
               />
             </>
           )}
+          <Link to="/user/login">返回登录页</Link>
           <div
             style={{
-              marginBottom: 24,
+              marginBottom: 12,
             }}
           >
           </div>

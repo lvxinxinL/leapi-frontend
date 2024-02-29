@@ -56,7 +56,7 @@ const TableList: React.FC = () => {
     if (!currentRow) {
       return;
     }
-    const hide = message.loading('禁用中');
+    const hide = message.loading('操作中');
     try {
       if (currentRow.userRole === 'suspend') {
         currentRow.userRole = 'user';
@@ -91,12 +91,14 @@ const TableList: React.FC = () => {
       title: '用户名',
       dataIndex: 'userName',
       copyable: true,
+      hideInSearch: true,
     },
     {
       title: '账号',
       dataIndex: 'userAccount',
       copyable: true,
       hideInForm: true,
+      hideInSearch: true,
     },
     {
       title: '头像',
@@ -127,6 +129,7 @@ const TableList: React.FC = () => {
         admin: { text: '管理员', status: 'Success' },
         suspend: { text: '已禁用', status: 'Error' },
       },
+      hideInSearch: true,
     },
     {
       title: '创建时间',
@@ -182,13 +185,12 @@ const TableList: React.FC = () => {
   ];
   return (
     <PageContainer>
+
       <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={'用户信息列表'}
+        search={false}// 关闭全局搜索框
+        headerTitle={'用户列表'}
         actionRef={actionRef}
         rowKey="key"
-        search={{
-          labelWidth: 120,
-        }}
         // 使用reloadFlag作为key来触发组件重新加载
         key={reloadFlag.toString()}
         request={async (
@@ -214,11 +216,6 @@ const TableList: React.FC = () => {
           }
         }}
         columns={columns}
-        // rowSelection={{
-        //   onChange: (_, selectedRows) => {
-        //     setSelectedRows(selectedRows);
-        //   },
-        // }}
       />
       <UpdateModal
         columns={columns}

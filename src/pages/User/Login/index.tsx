@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { createStyles } from 'antd-style';
 import { userLoginUsingPost } from '@/services/leapi-backend/userController';
-import { GITHUB_LINK } from '@/constants';
+import {GITHUB_LINK, SYSTEM_LOGO} from '@/constants';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -140,8 +140,8 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="LeAPI 接口平台"
+          logo={<img alt="logo" src={ SYSTEM_LOGO }/>}
+          title="LeAPI 接口开放平台"
           subTitle={'追风赶月莫停留，平芜尽处是春山'}
           initialValues={{
             autoLogin: true,
@@ -222,7 +222,7 @@ const Login: React.FC = () => {
                 }}
                 href={GITHUB_LINK}
               >
-                忘记密码 ?
+                忘记密码?请联系
               </a>
             </Space>
           </div>
