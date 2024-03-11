@@ -5,6 +5,7 @@ import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 const { REACT_APP_ENV = 'dev' } = process.env;
+
 export default defineConfig({
   /**
    * @name 开启 hash 模式
@@ -12,6 +13,16 @@ export default defineConfig({
    * @doc https://umijs.org/docs/api/config#hash
    */
   hash: true,
+  // history: {type: 'hash'},
+  // exportStatic: { },
+  // exportStatic: {
+  //   // 也可以配置函数动态获取
+  //   extraRoutePaths: async () => {
+  //     const res = await fetch('http://api.zhulang-user-center.top/interface_info');
+  //     const data = await res.json();
+  //     return data.map((item) => `/interface_info/${item.id}`);
+  //   },
+  // },
   /**
    * @name 兼容性设置
    * @description 设置 ie11 不一定完美兼容，需要检查自己使用的所有依赖

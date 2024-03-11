@@ -1,11 +1,11 @@
 import { Footer } from '@/components';
-import { LinkOutlined } from '@ant-design/icons';
 import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { history, Link } from '@umijs/max';
+import { history } from '@umijs/max';
 import { requestConfig } from './requestConfig';
 import React from 'react';
 import { getLoginUserUsingGet } from '@/services/leapi-backend/userController';
+import {logo} from '@/logo.jpg'
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -20,6 +20,7 @@ export async function getInitialState(): Promise<InitialState> {
   }
   try {
     const res = await getLoginUserUsingGet();
+    // alert(process.env.NODE_ENV);
     if(res.data) {
       state.loginUser = res.data;
     }
@@ -32,7 +33,8 @@ export async function getInitialState(): Promise<InitialState> {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    logo: 'https://pic.imgdb.cn/item/65e0254b9f345e8d036d1fcf.jpg',
+    history: 'hash',
+    logo: logo,
     layout: 'top',
     // actionsRender: () => [<Question key="doc" />],
     // avatarProps: {

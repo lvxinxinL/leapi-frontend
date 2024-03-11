@@ -5,14 +5,13 @@
     icon: 'smile',
     component: './Welcome',
   },
-  { path: '/index', name: '接口列表', icon: 'eye', component: './Index' },
   {
     path: '/interface_info/:id',
     name: '查看接口',
-    icon: 'smile',
     component: './InterfaceInfo',
     hideInMenu: true,
   },
+  { path: '/index', name: '接口列表', icon: 'eye', component: './Index' },
   {
     path: '/user/login',
     layout: false,

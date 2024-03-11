@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-components';
 import React, { useEffect, useState } from 'react';
-import {Button, Card, Descriptions, Form, message, Input, Divider, Switch, Avatar, Image} from 'antd';
+import {Button, Card, Descriptions, Form, message, Input, Divider} from 'antd';
 import {
   getInterfaceInfoByIdUsingGet,
   invokeInterfaceInfoUsingPost,
@@ -12,7 +12,7 @@ import { useParams } from '@@/exports';
  * @constructor
  */
 const Index: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [setLoading] = useState(false);
   const [data, setData] = useState<API.InterfaceInfo>();
   const [invokeRes, setInvokeRes] = useState<any>();
   const [invokeLoading, setInvokeLoading] = useState(false);
@@ -27,7 +27,8 @@ const Index: React.FC = () => {
     setLoading(true);
     try {
       const res = await getInterfaceInfoByIdUsingGet({
-        id: Number(params.id),
+        id: params.id,
+        // "id": params.id,
       });
       setData(res.data);
     } catch (error: any) {

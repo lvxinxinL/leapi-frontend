@@ -15,7 +15,8 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const requestConfig: RequestConfig = {
-  baseURL: 'http://localhost:8101',// 后端服务器
+  history: 'hash',
+  baseURL: process.env.NODE_ENV === 'production' ? 'http://api.zhulang-user-center.top:8101/' : 'http://localhost:8101/',
   withCredentials: true,// 发送请求时携带 Cookie
   // 请求拦截器
   requestInterceptors: [
